@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pannello Moderatore — 桜 SAKURA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body class="mod-body">
+
+<!-- ─── LOGIN GATE ─────────────────────────────────────────────────────────── -->
+<div id="login-gate" class="login-gate">
+  <div class="login-box">
+    <div class="login-logo">桜</div>
+    <h1 class="login-title">Accesso Moderatori</h1>
+    <input type="password" id="mod-password-input" class="input-field" placeholder="Password" onkeydown="if(event.key==='Enter')modLogin()" />
+    <button class="btn-cta full" onclick="modLogin()">Entra</button>
+    <p id="login-error" class="login-error hidden">Password errata.</p>
+  </div>
+</div>
+
+<!-- ─── DASHBOARD ─────────────────────────────────────────────────────────── -->
+<div id="dashboard" class="dashboard hidden">
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">桜 MOD</div>
+    <nav class="sidebar-nav">
+      <button class="sidebar-btn active" onclick="showTab('orders')">📋 Ordini</button>
+      <button class="sidebar-btn" onclick="showTab('products')">📦 Prodotti</button>
+      <button class="sidebar-btn" onclick="showTab('bundles')">🎁 Bundle</button>
+    </nav>
+    <a href="/" class="sidebar-exit">← Torna al sito</a>
+  </aside>
+
+  <main class="mod-main">
+
+    <!-- ORDERS TAB -->
+    <div id="tab-orders" class="tab-panel active">
+      <div class="panel-header">
+        <h2 class="panel-title">Ordini Recenti</h2>
+        <button class="btn-ghost sm" onclick="loadOrders()">↻ Aggiorna</button>
+      </div>
+      <div id="orders-table-wrap" class="table-wrap"></div>
+    </div>
+
+    <!-- PRODUCTS TAB -->
+    <div id="tab-products" class="tab-panel hidden">
+      <div class="panel-header">
+        <h2 class="panel-title">Gestione Prodotti</h2>
+        <button class="btn-cta sm" onclick="openProductModal()">+ Nuovo Prodotto</button>
+      </div>
+      <div id="mod-products-wrap" class="table-wrap"></div>
+    </div>
+
+    <!-- BUNDLES TAB -->
+    <div id="tab-bundles" class="tab-panel hidden">
+      <div class="panel-header">
+        <h2 class="panel-title">Gestione Bundle</h2>
+        <button class="btn-cta sm" onclick="openBundleModal()">+ Nuovo Bundle</button>
+      </div>
+      <div id="mod-bundles-wrap" class="bundles-mod-grid"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ─── PRODUCT MODAL ─────────────────────────────────────────────────────── -->
+<div id="product-modal" class="modal-overlay hidden">
+  <div class="modal-box wide">
+    <h2 class="modal-title" id="product-modal-title">Nuovo Prodotto</h2>
+    <input type="hidden" id="edit-product-id" />
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Nome</label>
+        <input type="text" id="f-name" class="input-field" placeholder="Nome prodotto" />
+      </div>
+      <div class="form-group full">
+        <label>Descrizione</label>
+        <textarea id="f-desc" class="input-field" rows="2" placeholder="Descrizione breve"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Prezzo (€)</label>
+        <input type="number" id="f-price" class="input-field" placeholder="0" />
+      </div>
+      <div class="form-group">
+        <label>Stock</label>
+        <input type="number" id="f-stock" class="input-field" placeholder="0" />
+      </div>
+      <div class="form-group">
+        <label>Categoria</label>
+        <input type="text" id="f-cat" class="input-field" placeholder="Es. Abbigliamento" />
+      </div>
+      <div class="form-group">
+        <label>Badge (opzionale)</label>
+        <input type="text" id="f-badge" class="input-field" placeholder="Es. Nuovo, Promo…" />
+      </div>
+      <div class="form-group full">
+        <label>URL Immagine</label>
+        <input type="text" id="f-image" class="input-field" placeholder="https://…" />
+      </div>
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" id="f-featured" />
+          In evidenza (homepage)
+        </label>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeProductModal()">Annulla</button>
+      <button class="btn-cta" onclick="saveProduct()">Salva Prodotto</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── BUNDLE MODAL ──────────────────────────────────────────────────────── -->
+<div id="bundle-modal" class="modal-overlay hidden">
+  <div class="modal-box wide">
+    <h2 class="modal-title">Nuovo Bundle</h2>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Nome Bundle</label>
+        <input type="text" id="b-name" class="input-field" placeholder="Es. Set Primavera" />
+      </div>
+      <div class="form-group full">
+        <label>Descrizione</label>
+        <textarea id="b-desc" class="input-field" rows="2" placeholder="Cosa include il bundle?"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Prezzo Originale (€)</label>
+        <input type="number" id="b-orig" class="input-field" />
+      </div>
+      <div class="form-group">
+        <label>Prezzo Bundle (€)</label>
+        <input type="number" id="b-price" class="input-field" />
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeBundleModal()">Annulla</button>
+      <button class="btn-cta" onclick="saveBundle()">Salva Bundle</button>
+    </div>
+  </div>
+</div>
+
+<script src="/mod.js"></script>
+</body>
+</html>
